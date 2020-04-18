@@ -117,14 +117,15 @@ class MyGame(arcade.Window):
         self.enemy_explosion_images = []
         for i in range(55):
             # 加载从 explosion0000.png 到 explosion0054.png 的所有图片为敌人的爆炸效果动画帧            
-            texture_name = f"images/enemy_explosion/explosion{i:04d}.png"
+            texture_name = "images/enemy_explosion/explosion{x:04d}.png".format(x=i)
             self.enemy_explosion_images.append(arcade.load_texture(texture_name))             
 
         # 设置玩家操作的飞机
         self.score = 0
         self.player_sprite = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",SPRITE_SCALING)
-        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 2.png", scale=SPRITE_SCALING))
-        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 3.png", scale=SPRITE_SCALING))          
+        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
+        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
+        self.player_sprite.scale = 1.0
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 70
         self.player_sprite.health  = 10             # 血条，在左上角画一根即可
@@ -262,8 +263,9 @@ class Cover(arcade.Window):
         self.background.left = 50
         self.background.top = SCREEN_HEIGHT
         self.demo_plane = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",0.8)
-        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 2.png",scale=0.8))
-        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 3.png",scale=0.8))
+        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
+        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
+        self.demo_plane.scale = 0.8
         self.demo_plane.center_x = 300
         self.demo_plane.center_y = 100
         self.begin_music = arcade.sound.load_sound("images/midway/start.wav")
