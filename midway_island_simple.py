@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 A Simple Version of Midway Island Naval Warfare with Python for Easy Learning by lixingqiu
 这个射击游戏是使用Arcade模块制作的。这个版本是核心版本，演示了爆炸效果，类的继承，按键检测等。
