@@ -101,6 +101,20 @@ class MyGame(arcade.Window):
         self.score = 0
         self.player_sprite = None
 
+        self.enemy_explosion_images = []
+#        for i in range(55):
+#            # 加载从 explosion0000.png 到 explosion0054.png 的所有图片为敌人的爆炸效果动画帧            
+#            texture_name = "images/enemy_explosion/explosion{x:04d}.png".format(x=i)
+#            self.enemy_explosion_images.append(arcade.load_texture(texture_name))             
+
+        columns = 16
+        count = 60
+        sprite_width = 256
+        sprite_height = 256
+        file_name = ":resources:images/spritesheets/explosion.png"
+        # Load the explosions from a sprite sheet
+        self.enemy_explosion_images = arcade.load_spritesheet(file_name, sprite_width, sprite_height, columns, count)
+
     def start_new_game(self):
         """ 设置与初始化游戏 """
         
@@ -114,12 +128,6 @@ class MyGame(arcade.Window):
         self.all_sprites_list = arcade.SpriteList()      # 所有角色列表
         self.enemy_explosion_list = arcade.SpriteList()  # 所有敌人的爆炸角色列表
         
-        self.enemy_explosion_images = []
-        for i in range(55):
-            # 加载从 explosion0000.png 到 explosion0054.png 的所有图片为敌人的爆炸效果动画帧            
-            texture_name = "images/enemy_explosion/explosion{x:04d}.png".format(x=i)
-            self.enemy_explosion_images.append(arcade.load_texture(texture_name))             
-
         # 设置玩家操作的飞机
         self.score = 0
         self.player_sprite = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",SPRITE_SCALING)
@@ -210,10 +218,16 @@ class MyGame(arcade.Window):
                 enemy.kill()
                 self.player_sprite.health -= 1
                 if self.player_sprite.health < 0 :
-                    Explosion(self.enemy_explosion_images,self.player_sprite.center_x,self.player_sprite.center_y)
+                    e = Explosion(self.enemy_explosion_images)
+                    e.center_x = self.player_sprite.center_x
+                    e.center_y = self.player_sprite.center_y
+                    e.update()
                     self.player_sprite.kill()
                     
                 e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
+                e.center_x = enemy.center_x
+                e.center_y = enemy.center_y
+                e.update()
                 self.enemy_explosion_list.append(e)
                 self.all_sprites_list.append(e)
             
@@ -225,6 +239,9 @@ class MyGame(arcade.Window):
                 [b.kill() for b in hit_list]   # 碰到的每颗子弹都删除
                 self.score += len(hit_list)                
                 e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
+                e.center_x = enemy.center_x
+                e.center_y = enemy.center_y
+                e.update()
                 self.enemy_explosion_list.append(e)
                 self.all_sprites_list.append(e)
                 
