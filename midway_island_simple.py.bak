@@ -26,6 +26,16 @@ MOVEMENT_SPEED  = 5
 
 class Player(arcade.Sprite):
 
+#    def __init__(self,image):
+#        self.player_sprite = arcade.AnimatedTimeSprite(scale=1.0)
+#        self.player_sprite.textures = []
+#        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 1.png"))
+#        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
+#        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
+#        self.player_sprite.center_x = 50
+#        self.player_sprite.center_y = 70
+#        self.player_sprite.scale = 1.0
+#
     def update(self):
         self.center_x += self.change_x
         self.center_y += self.change_y
@@ -135,19 +145,17 @@ class MyGame(arcade.Window):
         self.all_sprites_list = arcade.SpriteList()      # 所有角色列表
         self.enemy_explosion_list = arcade.SpriteList()  # 所有敌人的爆炸角色列表
         
-        # Set the player-operated aircraft
+        # 设置玩家操作的飞机
         self.score = 0
-#        self.player_sprite = Player("images/midway/Plane 1.png",SPRITE_SCALING)
-        self.player_sprite = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",0.8)
+        self.player_sprite = Player("images/midway/Plane 1.png")
+#        self.player_sprite = arcade.AnimatedTimeSprite(scale=1.0)
+#        self.player_sprite.textures = []
+#        self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 1.png"))
         self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
         self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
-        self.player_sprite.scale = 1.0
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 70
-        self.player_sprite.health  = 10                  # No of Lives
-        self.player_sprite.update()
-        self.player_sprite.update_animation()
-        self.all_sprites_list.append(self.player_sprite)
+        self.player_sprite.health  = 10             # 血条，在左上角画一根即可
 
         # 敌人角色生成
         for i in range(ENEMY_COUNT):
@@ -172,8 +180,8 @@ class MyGame(arcade.Window):
         self.background2.bottom = SCREEN_HEIGHT  
         self.all_sprites_list.append(self.background2)
 
-        # 1943logo (new)
-        self.logo_1943 = arcade.Sprite("images/midway/1943Logo3.png")
+        # 1943logo
+        self.logo_1943 = arcade.Sprite("images/midway/1943Logo2.png")
         self.logo_1943.center_x  = SCREEN_WIDTH // 2
         self.logo_1943.center_y  = SCREEN_HEIGHT // 2
         self.interval = 60
@@ -278,17 +286,6 @@ class MyGame(arcade.Window):
            self.interval_counter +=1
            if self.interval_counter < self.interval //2: self.logo_1943.draw()
            if self.interval_counter % self.interval == 0:self.interval_counter = 0
-
-        if self.player_sprite.left < 0:
-            self.player_sprite.left = 0
-        elif self.player_sprite.right > SCREEN_WIDTH - 1:
-            self.player_sprite.right = SCREEN_WIDTH - 1
-
-        if self.player_sprite.bottom < 0:
-            self.player_sprite.bottom = 0
-        elif self.player_sprite.top > SCREEN_HEIGHT - 1:
-            self.player_sprite.top = SCREEN_HEIGHT - 1
-
               
 class Cover(arcade.Window):
     """封面类"""
@@ -297,7 +294,7 @@ class Cover(arcade.Window):
         super().__init__(width, height, title)
 
     def setup(self):
-        self.background = arcade.Sprite("images/midway/Logo2.png")
+        self.background = arcade.Sprite("images/midway/Logo1.png")
         self.background.left = 50
         self.background.top = SCREEN_HEIGHT
         self.demo_plane = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",0.8)
