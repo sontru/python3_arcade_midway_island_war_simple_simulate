@@ -163,7 +163,7 @@ class MyGame(arcade.Window):
         self.background.center_x = SCREEN_WIDTH // 2
         self.background.bottom = 0
         
-        # 设置滚动背景，两个最先画的角色往下移，移到一定坐标就到上面去
+        # Set the scrolling background, the two first drawn characters move down, move to a certain coordinate and go to the top
         self.background1 = Background(sea_image)
         self.background1.center_x = SCREEN_WIDTH // 2
         self.background1.bottom = 0
@@ -218,51 +218,52 @@ class MyGame(arcade.Window):
     def update(self, delta_time):
         """ Game update logic """
 
-        # Update coordinates, etc.
-        #  print(self.background2.bottom - self.background1.top)
-        distance = self.background2.bottom - self.background1.top
-        if  distance < 0 and distance > -40:   # Fissure remedy - Make up for the cracks
+        if self.gamestate != START_SCREEN:
+            # Update coordinates, etc.
+            #  print(self.background2.bottom - self.background1.top)
+            distance = self.background2.bottom - self.background1.top
+            if  distance < 0 and distance > -40:   # Fissure remedy - Make up for the cracks
              
-            self.background2.bottom = self.background1.top
+                self.background2.bottom = self.background1.top
             
-        self.enemy_list.move(0, -5)
-        self.all_sprites_list.update() 
-        self.player_sprite.update_animation()         
+            self.enemy_list.move(0, -5)
+            self.all_sprites_list.update() 
+            self.player_sprite.update_animation()         
 
-        if self.player_sprite.health > 0:
-            # Collision detection between players and all enemy aircraft.
-            hit_list = arcade.check_for_collision_with_list(self.player_sprite,self.enemy_list)
-            # Traverse the list of enemy aircraft encountered
-            for enemy in hit_list:
-                enemy.kill()
-                self.player_sprite.health -= 1
-                if self.player_sprite.health < 0 :
-                    e = Explosion(self.enemy_explosion_images)
-                    e.center_x = self.player_sprite.center_x
-                    e.center_y = self.player_sprite.center_y
-                    e.update()
-                    self.player_sprite.kill()
+            if self.player_sprite.health > 0:
+                # Collision detection between players and all enemy aircraft.
+                hit_list = arcade.check_for_collision_with_list(self.player_sprite,self.enemy_list)
+                # Traverse the list of enemy aircraft encountered
+                for enemy in hit_list:
+                    enemy.kill()
+                    self.player_sprite.health -= 1
+                    if self.player_sprite.health < 0 :
+                        e = Explosion(self.enemy_explosion_images)
+                        e.center_x = self.player_sprite.center_x
+                        e.center_y = self.player_sprite.center_y
+                        e.update()
+                        self.player_sprite.kill()
                     
-                e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
-                e.center_x = enemy.center_x
-                e.center_y = enemy.center_y
-                e.update()
-                self.enemy_explosion_list.append(e)
-                self.all_sprites_list.append(e)
+                    e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
+                    e.center_x = enemy.center_x
+                    e.center_y = enemy.center_y
+                    e.update()
+                    self.enemy_explosion_list.append(e)
+                    self.all_sprites_list.append(e)
             
-        # 每个敌人有没有碰到子弹
-        for enemy in self.enemy_list:   
-            hit_list = arcade.check_for_collision_with_list(enemy,self.bullet_list)
-            if len(hit_list) > 0:
-                enemy.kill()
-                [b.kill() for b in hit_list]   # Delete every bullet encountered
-                self.score += len(hit_list)                
-                e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
-                e.center_x = enemy.center_x
-                e.center_y = enemy.center_y
-                e.update()
-                self.enemy_explosion_list.append(e)
-                self.all_sprites_list.append(e)
+            # Did each enemy hit the bullet
+            for enemy in self.enemy_list:   
+                hit_list = arcade.check_for_collision_with_list(enemy,self.bullet_list)
+                if len(hit_list) > 0:
+                    enemy.kill()
+                    [b.kill() for b in hit_list]   # Delete every bullet encountered
+                    self.score += len(hit_list)                
+                    e = Explosion(self.enemy_explosion_images,enemy.center_x,enemy.center_y)
+                    e.center_x = enemy.center_x
+                    e.center_y = enemy.center_y
+                    e.update()
+                    self.enemy_explosion_list.append(e)
+                    self.all_sprites_list.append(e)
                 
     def on_draw(self):
         """ Render screen """
@@ -273,7 +274,7 @@ class MyGame(arcade.Window):
             self.player_sprite.center_x = 650
             self.player_sprite.center_y = 100
             self.player_sprite.draw()
-
+            return 
         else:
             # Start rendering, this command must be before all redraw commands
             self.background.draw()    # Unmovable background to make up for the problem of rolling background cracks
@@ -292,8 +293,8 @@ class MyGame(arcade.Window):
 
             if self.player_sprite.health < 1:  # 血量小于1显示游戏结束
                self.interval_counter +=1
-               if self.interval_counter < self.interval //2: self.logo_1943.draw()
-               if self.interval_counter % self.interval == 0:self.interval_counter = 0
+               if self.interval_counter < self.interval // 2: self.logo_1943.draw()
+               if self.interval_counter % self.interval == 0: self.interval_counter = 0
 
             if self.player_sprite.left < 0:
                 self.player_sprite.left = 0
