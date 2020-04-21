@@ -24,8 +24,6 @@ SCREEN_TITLE = "A Simple Version of Midway Island Naval Warfare with Python for 
 ENEMY_COUNT = 100
 MOVEMENT_SPEED  = 5
 
-START_SCREEN = 1
-
 class Player(arcade.Sprite):
 
     def update(self):
@@ -106,7 +104,6 @@ class MyGame(arcade.Window):
 
         super().__init__(width, height, title)
 
-        self.gamestate = 1
         # 角色列表定义
         self.all_sprites_list = None
         self.enemy_list = None
@@ -140,6 +137,7 @@ class MyGame(arcade.Window):
         
         # Set the player-operated aircraft
         self.score = 0
+#        self.player_sprite = Player("images/midway/Plane 1.png",SPRITE_SCALING)
         self.player_sprite = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",0.8)
         self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
         self.player_sprite.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
@@ -180,18 +178,11 @@ class MyGame(arcade.Window):
         self.logo_1943.center_y  = SCREEN_HEIGHT // 2
         self.interval = 60
         self.interval_counter = 0
-
-        # Start screen
-        self.demo_background = arcade.Sprite("images/midway/Logo2.png")
-        self.demo_background.left = 50
-        self.demo_background.top = SCREEN_HEIGHT
-
+        
         
     def on_key_press(self, key, modifiers):
         """ Mouse button events """
         if self.player_sprite.health <=0 :return
-        if key == arcade.key.SPACE:
-            self.gamestate = 0
         if key == arcade.key.W:
             self.player_sprite.change_y = MOVEMENT_SPEED
         elif key == arcade.key.S:
@@ -267,47 +258,83 @@ class MyGame(arcade.Window):
     def on_draw(self):
         """ Render screen """
 
+        # Start rendering, this command must be before all redraw commands
         arcade.start_render()
-        if self.gamestate == START_SCREEN:
-            self.demo_background.draw()
-            self.player_sprite.center_x = 650
-            self.player_sprite.center_y = 100
-            self.player_sprite.draw()
-
-        else:
-            # Start rendering, this command must be before all redraw commands
-            self.background.draw()    # Unmovable background to make up for the problem of rolling background cracks
-            self.background1.draw()   # Paint scroll background
-            self.background2.draw()   # Paint scroll background
-            # Draw all the characters
-            self.enemy_list.draw()
-            if self.player_sprite.health > 0:            
-               self.player_sprite.draw()
-            self.bullet_list.draw()
-            self.enemy_explosion_list.draw()
+        self.background.draw()    # Unmovable background to make up for the problem of rolling background cracks
+        self.background1.draw()   # Paint scroll background
+        self.background2.draw()   # Paint scroll background
+        # Draw all the characters
+        self.enemy_list.draw()
+        if self.player_sprite.health > 0:            
+           self.player_sprite.draw()
+        self.bullet_list.draw()
+        self.enemy_explosion_list.draw()
         
-            # 画得分情况
-            score = "Kills: " + str(self.score) + ", Lives: " + str(self.player_sprite.health)
-            arcade.draw_text(score, 10, 20, arcade.color.WHITE, 14 )
+        # 画得分情况
+        score = "Kills: " + str(self.score) + ", Lives: " + str(self.player_sprite.health)
+        arcade.draw_text(score, 10, 20, arcade.color.WHITE, 14 )
 
-            if self.player_sprite.health < 1:  # 血量小于1显示游戏结束
-               self.interval_counter +=1
-               if self.interval_counter < self.interval //2: self.logo_1943.draw()
-               if self.interval_counter % self.interval == 0:self.interval_counter = 0
+        if self.player_sprite.health < 1:  # 血量小于1显示游戏结束
+           self.interval_counter +=1
+           if self.interval_counter < self.interval //2: self.logo_1943.draw()
+           if self.interval_counter % self.interval == 0:self.interval_counter = 0
 
-            if self.player_sprite.left < 0:
-                self.player_sprite.left = 0
-            elif self.player_sprite.right > SCREEN_WIDTH - 1:
-                self.player_sprite.right = SCREEN_WIDTH - 1
+        if self.player_sprite.left < 0:
+            self.player_sprite.left = 0
+        elif self.player_sprite.right > SCREEN_WIDTH - 1:
+            self.player_sprite.right = SCREEN_WIDTH - 1
 
-            if self.player_sprite.bottom < 0:
-                self.player_sprite.bottom = 0
-            elif self.player_sprite.top > SCREEN_HEIGHT - 1:
-                self.player_sprite.top = SCREEN_HEIGHT - 1
+        if self.player_sprite.bottom < 0:
+            self.player_sprite.bottom = 0
+        elif self.player_sprite.top > SCREEN_HEIGHT - 1:
+            self.player_sprite.top = SCREEN_HEIGHT - 1
 
+              
+class Cover(arcade.Window):
+    """封面类"""
+    def __init__(self, width, height, title):
+
+        super().__init__(width, height, title)
+
+    def setup(self):
+        self.background = arcade.Sprite("images/midway/Logo2.png")
+        self.background.left = 50
+        self.background.top = SCREEN_HEIGHT
+        self.demo_plane = arcade.AnimatedTimeSprite("images/midway/Plane 1.png",0.8)
+        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 2.png"))
+        self.demo_plane.textures.append(arcade.load_texture("images/midway/Plane 3.png"))
+        self.demo_plane.scale = 3.0
+        self.demo_plane.center_x = 650
+        self.demo_plane.center_y = 100
+        self.begin_music = arcade.sound.load_sound("images/midway/start.wav")
+        arcade.sound.play_sound(self.begin_music)
+        
+    def on_key_press(self, key, modifiers):
+        """鼠标按键事件 """
+
+        if key == arcade.key.SPACE: # Press the space bar to close the window
+            self.close()
+                                        
+    def update(self,delta_time):
+        self.demo_plane.update()
+        self.demo_plane.update_animation()
+        
+                                        
+    def on_draw(self):
+        """        渲染屏幕        """
+
+        # 开始渲染，此命令要在所有重画命令之前
+        arcade.start_render()
+        self.background.draw()
+        self.demo_plane.draw()         
+        
 
 def main():
 
+    cover = Cover(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    cover.setup()
+    arcade.run()
+    
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.start_new_game()
     arcade.run()
